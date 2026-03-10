@@ -61,11 +61,13 @@ TEST(MPIHelper, allgatherv_string) {
   int rank = helper.rank();
   int size = helper.size();
 
-  // rank r sends (r+1) strings: "r_0", "r_1", ...
+  // rank r sends (r+1) strings; string j has (r*3 + j + 1) chars of 'a'+r
+  // e.g. rank 0: {"a"}, rank 1: {"bb", "bbb", "bbbb"}, rank 2: {"ccc"x4, "ccc"x5, "ccc"x6, "ccc"x7}
   int sendcount = rank + 1;
   std::vector<std::string> sendbuf(sendcount);
   for (int j = 0; j < sendcount; ++j) {
-    sendbuf[j] = std::to_string(rank) + "_" + std::to_string(j);
+    int len = rank * 3 + j + 1;
+    sendbuf[j] = std::string(len, 'a' + rank);
   }
 
   std::vector<std::string> recvbuf;
@@ -79,7 +81,8 @@ TEST(MPIHelper, allgatherv_string) {
   for (int r = 0; r < size; ++r) {
     EXPECT_EQ(displs[r], offset);
     for (int j = 0; j < r + 1; ++j) {
-      EXPECT_EQ(recvbuf[offset + j], std::to_string(r) + "_" + std::to_string(j));
+      int len = r * 3 + j + 1;
+      EXPECT_EQ(recvbuf[offset + j], std::string(len, 'a' + r));
     }
     offset += r + 1;
   }
