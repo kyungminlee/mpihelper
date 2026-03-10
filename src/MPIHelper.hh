@@ -32,6 +32,8 @@ DEF_DT(long, MPI_LONG);
 DEF_DT(unsigned long, MPI_UNSIGNED_LONG);
 DEF_DT(long long, MPI_LONG_LONG);
 DEF_DT(unsigned long long, MPI_UNSIGNED_LONG_LONG);
+DEF_DT(float, MPI_FLOAT);
+DEF_DT(double, MPI_DOUBLE);
 
 class MPIHelper {
 public:
@@ -169,8 +171,8 @@ public:
 
   int rank() const {
     int rank = -1;
-    if (MPI_Comm_size(_comm, &rank) != MPI_SUCCESS) {
-      throw MPIError("Failed to get size");
+    if (MPI_Comm_rank(_comm, &rank) != MPI_SUCCESS) {
+      throw MPIError("Failed to get rank");
     }
     return rank;
   }
