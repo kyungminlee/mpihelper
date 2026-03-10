@@ -23,6 +23,10 @@ FetchContent_MakeAvailable(googletest)
 add_library(MPIHelper INTERFACE)
 target_link_libraries(MPIHelper INTERFACE MPI::MPI_CXX)
 target_include_directories(MPIHelper INTERFACE src)
+target_sources(MPIHelper INTERFACE 
+  src/MPIHelper.hh
+  src/DataExchange.hh
+)
 
 add_executable(test tests/test.cc)
 target_link_libraries(test PRIVATE MPIHelper GTest::gtest_main)

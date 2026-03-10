@@ -2,6 +2,7 @@
 #include "MPIHelper.hh"
 #include "Data.hh"
 #include <unordered_map>
+#include <string>
 
 
 inline void fullExchange(
