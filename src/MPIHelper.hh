@@ -37,12 +37,6 @@ public:
   MPIHelper(MPI_Comm comm)
   : _comm(comm)
   {
-    if (MPI_Comm_size(_comm, &_size) != MPI_SUCCESS) {
-      throw MPIError("Failed to get size");
-    }
-    if (MPI_Comm_rank(_comm, &_rank) != MPI_SUCCESS) {
-      throw MPIError("Failed to get rank");
-    }
   }
 
   template <typename T1, typename T2>
@@ -123,11 +117,61 @@ public:
     }
   }
 
-  int size() const { return _size; }
-  int rank() const { return _rank; }
+  template <typename T>
+  void allreduce(T const * sendbuf, T * recvbuf, int count, MPI_Op op) const {
+    if (MPI_Allreduce(sendbuf, recvbuf, count, MPIDataType<T>::type(), op, _comm) != MPI_SUCCESS) {
+      throw MPIError("Failed to allreduce");
+    }
+  }
+
+  template <typename T>
+  void scatter(T const * sendbuf, int sendcount, T * recvbuf, int recvcount, int root) const {
+    if (MPI_Scatter(sendbuf, sendcount, MPIDataType<T>::type(), recvbuf, recvcount, MPIDataType<T>::type(), root, _comm) != MPI_SUCCESS) {
+      throw MPIError("Failed to scatter");
+    }
+  }
+
+  template <typename T>
+  void reduce(T const * sendbuf, T * recvbuf, int count, MPI_Op op, int root) const {
+    if (MPI_Reduce(sendbuf, recvbuf, count, MPIDataType<T>::type(), op, root, _comm) != MPI_SUCCESS) {
+      throw MPIError("Failed to reduce");
+    }
+  }
+
+  template <typename T>
+  MPI_Request isend(T const * buf, int count, int dest, int tag) const {
+    MPI_Request request;
+    if (MPI_Isend(buf, count, MPIDataType<T>::type(), dest, tag, _comm, &request) != MPI_SUCCESS) {
+      throw MPIError("Failed to isend");
+    }
+    return request;
+  }
+
+  template <typename T>
+  MPI_Request irecv(T * buf, int count, int source, int tag) const {
+    MPI_Request request;
+    if (MPI_Irecv(buf, count, MPIDataType<T>::type(), source, tag, _comm, &request) != MPI_SUCCESS) {
+      throw MPIError("Failed to irecv");
+    }
+    return request;
+  }
+
+  int size() const {
+    int size = -1;
+    if (MPI_Comm_size(_comm, &size) != MPI_SUCCESS) {
+      throw MPIError("Failed to get size");
+    }
+    return size;
+  }
+
+  int rank() const {
+    int rank = -1;
+    if (MPI_Comm_size(_comm, &rank) != MPI_SUCCESS) {
+      throw MPIError("Failed to get size");
+    }
+    return rank;
+  }
 
 private:
   MPI_Comm _comm = MPI_COMM_NULL;
-  int _size = -1;
-  int _rank = -1;
 };
