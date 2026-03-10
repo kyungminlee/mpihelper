@@ -1,8 +1,8 @@
+#pragma once
 #include <mpi.h>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <span>
 
 class MPIError : public std::runtime_error {
 public:

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 class Mesh {
 public:
@@ -27,12 +28,13 @@ public:
 };
 
 class RealRegionScalar {
-  Data * _data = nullptr;
-
+public:
   RealRegionScalar(Data & data)
   : _data(&data) {
     _values.resize(_data->getMesh().getRegionSize(), 0.0);
   }
+
+  Mesh const & getMesh() const { return _data->getMesh(); }
 
   double operator[](std::size_t i) const {
     return _values[i];
@@ -48,5 +50,8 @@ class RealRegionScalar {
   double const * data() const {
     return _values.data();
   }
+
+private:
+  Data * _data = nullptr;
   std::vector<double> _values;
 };
