@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <span>
 
 class MPIError : public std::runtime_error {
 public:
@@ -58,6 +59,7 @@ public:
     std::vector<int, A3> & displs
   ) {
     static_assert(sizeof(T1) == sizeof(T2));
+    int _size = size();
     std::vector<int> recvcounts(_size);
     allgather(sendcount, recvcounts.data(), 1);
     displs.resize(_size + 1);
@@ -80,6 +82,7 @@ public:
     std::vector<std::string, A2> & recvbuf,
     std::vector<int, A3> & displs
   ) {
+    int _size = size();
     // Step 1: gather string counts per rank -> build string-level displs
     std::vector<int> recvcounts_str(_size);
     allgather(sendcount, recvcounts_str.data(), 1);
