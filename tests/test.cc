@@ -18,9 +18,8 @@ const ::testing::Environment *const mpi_env =
 
 TEST(MPIHelper, allgather) {
   MPIHelper helper(MPI_COMM_WORLD);
-  int rank, size;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  int rank = helper.rank();
+  int size = helper.size();
 
   std::vector<int> recvbuf(size);
   helper.allgather(rank, recvbuf.data(), 1);
